@@ -16,7 +16,7 @@ renamed as (
         phone,
         active,
         store_id,
-        manager_id
+        CAST(manager_id AS INT) AS manager_id
 
     from source
 

@@ -13,8 +13,8 @@ renamed as (
         order_id,
         item_id,
         product_id,
-        quantity,
-        list_price,
+        quantity AS item_quantity,
+        list_price AS item_price,
         discount
 
     from source
