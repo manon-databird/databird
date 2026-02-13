@@ -1,0 +1,204 @@
+
+version: 2
+
+models:
+    - name: stg_local_bike__brands
+      description: standardized bicycle brand reference table.
+      columns:
+        - name: brand_id
+          description: unique identifier for brands
+          data_tests:
+             - unique
+             - not_null
+    
+        - name: brand_name
+          description: name of brand
+
+    - name: stg_local_bike__categories
+      description: standardized product categories table.
+      columns: 
+        - name: category_id
+          description: unique identifier for categories
+          data_tests:
+            - unique
+            - not_null
+        - name: category_name
+          description : name of each category of bicycle
+    
+    - name: stg_local_bike__customers
+      description: standardized customers reference table
+      columns:
+        - name: customer_id
+          description: unique identifier for customer
+          data_tests:
+            - unique
+            - not_null
+        - name: first_name
+          description: customer's first name
+        - name: last_name
+          description: customer's last name
+        - name: phone
+          description: customer's phone number
+        - name: email
+          description: customer's email
+        - name: street
+          description: street name of the customer
+        - name: city
+          description: customer's city
+        - name: state
+          description: customer's state
+        - name: zip_code
+          description: customer's postal code adress
+    
+    - name: stg_local_bike__order_items
+      description: standardized order items table reference
+      columns:
+        - name: order_item_id
+          description: unique identifier for order items (by concatenation f order_id and item_id)
+          data_tests:
+            - unique
+            - not_null
+        - name: order_id
+          description: identifier of a specific customer order
+        - name: item_id
+          description: identifier of a specific item
+        - name: product_id
+          description: identifier of a specific product
+        - name: quantity
+          description: number of item in a customer order
+        - name: list_price
+          description: public price before any discount
+        - name: discount
+          description: discount for a specific item
+    
+    - name: stg_local_bike__orders
+      description: standardized orders table
+      columns:
+        - name: order_id
+          description: unique identifier for a specific order
+          data_tests:
+            - unique
+            - not_null
+        - name: customer_id
+          description: unique identifier for each customer, foreign key
+          data_tests:
+            - relationships:
+                field: customer_id
+                to: ref('stg_local_bike__customers')
+        - name: order_status
+          description: order fulfillment status
+        - name: order_date
+          description: order creation date
+        - name: required_date
+          description: date by which the order is expected to be delivered
+        - name: shipped_date
+          description: date when the order was shipped
+        - name: store_id
+          description : unique identifier for a specific store, foreign key for the store table
+          data_tests:
+            - relationships:
+                field: store_id
+                to: ref('stg_local_bike__stores')
+        - name: staff_id
+          description: unique identifier for each staff member, foreign key of staff table
+          data_tests:
+            - relationships:
+                field: staff_id
+                to: ref('stg_local_bike__staffs')
+    
+    - name: stg_local_bike__products
+      description: standardized table for products
+      columns : 
+        - name: product_id
+          description: unique identifier for a product 
+          data_tests:
+            - unique
+            - not_null
+        - name: product_name
+          description : name of a specific product
+        - name: brand_id  
+          description : identifier of a specific brand, foreign key to brand table
+          data_tests:
+            - relationships:
+                field: brand_id
+                to: ref('stg_local_bike__brands')
+        - name: category_id
+          description: identifier for a specific category, foreign key to categories table 
+          data_tests:
+            - relationships:
+                field: category_id
+                to: ref('stg_local_bike__categories')
+        - name: model_year
+          description: product model release year
+        - name: list_price
+          description: public price before any discount
+    
+    - name: stg_local_bike__staffs
+      description : reference table for staff members 
+      columns: 
+        - name: staff_id
+          description: unique identifier for staff member 
+          data_tests:
+            - unique
+            - not_null
+        - name: first_name
+          description: staff member's first name
+        - name: last_name
+          description: staff member's last name
+        - name: email
+          description: staff member's email
+        - name: phone
+          description: staff member's phone number
+        - name: active
+          description: boolean flag showing if the employee is currently employed
+        - name : store_id
+          description : unique identifier for each store; foreign key of store table
+          data_tests:
+            - relationships:
+                field: store_id
+                to: ref('stg_local_bike__stores')
+        - name: manager_id
+          description: identifier of the staff member's direct manager
+    
+    - name: stg_local_bike__stocks
+      description: current inventory levels by store and product
+      columns: 
+        - name: store_id
+          description: identifier of the store, foreign key for table stores
+          data_tests:
+            - relationships:
+                field: store_id
+                to: ref('stg_local_bike__stores')
+        - name: product_id
+          description: identifier of the product
+          data_tests:
+            - relationships:
+                field: product_id
+                to: ref('stg_local_bike__products')
+        - name: quantity
+          description: available stock quantity for the product in the store
+
+    - name: stg_local_bike__stores
+      description: store reference information including contact and location details
+      columns:
+        - name: store_id
+          description: unique identifier of the store
+          data_tests:
+            - unique
+            - not_null
+        - name: store_name
+          description: name of the store
+        - name: phone
+          description: store contact phone number
+        - name: email
+          description: store contact email adress
+        - name: street
+          description: street adress of the store
+        - name: city
+          description: city where the store is located
+        - name: state
+          description: state of the store
+        - name: zip_code
+          description: postal_code of the store
+
+
