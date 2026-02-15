@@ -1,4 +1,5 @@
 SELECT
+    --granularité : 1 ligne = une commande
     -- IDs
     o.order_id
     , o.customer_id
