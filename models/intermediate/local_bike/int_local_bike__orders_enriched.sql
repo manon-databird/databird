@@ -19,8 +19,8 @@ SELECT
 
     -- store
     , st.store_name
-    , st.city AS store_city
-    , st.state AS store_state
+    , st.store_city
+    , st.store_state
 
     -- staff
     , CONCAT(staff.first_name, ' ', staff.last_name) AS staff_name
@@ -35,8 +35,8 @@ SELECT
     -- checks
     , CASE WHEN o.shipped_date IS NOT NULL THEN TRUE ELSE FALSE END AS is_shipped
     , CASE WHEN o.order_status = 4 THEN TRUE ELSE FALSE END AS is_completed
-    , CASE WHEN c.state = st.state THEN TRUE ELSE FALSE END AS is_same_state
-    , CASE WHEN c.city = st.city THEN TRUE ELSE FALSE END AS is_same_city
+    , CASE WHEN c.state = st.store_state THEN TRUE ELSE FALSE END AS is_same_state
+    , CASE WHEN c.city = st.store_city THEN TRUE ELSE FALSE END AS is_same_city
 
     -- for time analysis
     , EXTRACT(YEAR FROM o.order_date) AS order_year

@@ -14,8 +14,8 @@ renamed as (
         phone,
         email,
         street,
-        city,
-        state,
+        city AS store_city,
+        state AS store_state,
         CAST(zip_code AS STRING) AS zip_code
 
     from source
