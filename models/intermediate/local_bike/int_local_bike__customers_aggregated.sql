@@ -73,7 +73,10 @@ SELECT
     , cm.last_order_date
     , cm.customer_lifetime
 
-    -- 
+    -- check
+    , CASE WHEN cm.total_orders = 1 THEN TRUE ELSE FALSE END AS is_one_time_buyer
+    , CASE WHEN cm.total_orders >= 2 THEN TRUE ELSE FALSE END AS has_repeat_purchase
+    
 FROM customer_metrics cm 
 LEFT JOIN customers_info ci USING (customer_id)
 ORDER BY cm.total_revenue DESC
