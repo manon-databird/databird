@@ -14,7 +14,7 @@ renamed as (
         brand_id,
         category_id,
         model_year,
-        list_price
+        list_price AS product_price
 
     from source
 
