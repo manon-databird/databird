@@ -1,0 +1,228 @@
+version: 2
+
+models:
+  - name: mrt_local_bike__sales_performance
+    description: >
+      Table agrégée des détails de ventes, incluant des métriques par jour, magasin, employé, catégorie, marque et état client.
+      Basée sur les tables `int_local_bike__orders_enriched` et `int_local_bike__order_items_enriched`.
+    columns:
+      - name: order_date
+        description: Date de la commande.
+        data_tests:
+          - not_null
+
+      - name: order_year
+        description: Année de la commande.
+        data_tests:
+          - not_null
+
+      - name: order_month
+        description: Mois de la commande.
+        data_tests:
+          - not_null
+
+      - name: order_quarter
+        description: Trimestre de la commande.
+        data_tests:
+          - not_null
+
+      - name: order_year_month
+        description: Année et mois de la commande (format AAAA-MM).
+        data_tests:
+          - not_null
+
+      - name: day_name
+        description: 'Nom du jour de la semaine (ex: "Monday")'
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+      - name: day_type
+        description: Type de jour (Weekend ou Weekday).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Weekend", "Weekday"]
+
+      - name: store_id
+        description: Identifiant unique du magasin.
+        data_tests:
+          - not_null
+
+      - name: store_name
+        description: Nom du magasin.
+        data_tests:
+          - not_null
+
+      - name: store_state
+        description: État du magasin.
+        data_tests:
+          - not_null
+
+      - name: staff_id
+        description: Identifiant unique de l'employé.
+        data_tests:
+          - not_null
+
+      - name: staff_name
+        description: Nom de l'employé.
+        data_tests:
+          - not_null
+
+      - name: category_name
+        description: Nom de la catégorie de produit.
+        data_tests:
+          - not_null
+
+      - name: brand_name
+        description: Nom de la marque de produit.
+        data_tests:
+          - not_null
+
+      - name: customer_state
+        description: État du client.
+        data_tests:
+          - not_null
+
+      - name: total_orders
+        description: Nombre total de commandes.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: unique_customers
+        description: Nombre de clients uniques.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_revenue
+        description: Chiffre d'affaires net total.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: gross_revenue
+        description: Chiffre d'affaires brut total.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_discounts
+        description: Montant total des remises.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_units_sold
+        description: Nombre total d'unités vendues.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: avg_order_value
+        description: Valeur moyenne par commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: revenue_per_unit
+        description: Chiffre d'affaires par unité vendue.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: discount_rate
+        description: Taux de remise moyen.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: avg_delivery_days
+        description: Nombre moyen de jours pour la livraison.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: on_time_orders
+        description: Nombre de commandes livrées à temps.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: late_orders
+        description: Nombre de commandes livrées en retard.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: on_time_delivery_rate
+        description: Taux de livraisons à temps.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: delivery_performance_category
+        description: >
+          Catégorie de performance de livraison :
+          - Excellent (>= 95%)
+          - Good (85-95%)
+          - Needs Improvement (70-85%)
+          - Poor (< 70%)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Excellent", "Good", "Needs Improvement", "Poor"]
+
+      - name: in_state_revenue
+        description: Chiffre d'affaires généré dans l'état du magasin.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: out_of_state_revenue
+        description: Chiffre d'affaires généré hors de l'état du magasin.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: in_state_revenue_rate
+        description: Part du chiffre d'affaires généré dans l'état du magasin.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: discount_strategy
+        description: >
+          Stratégie de remise appliquée :
+          - Big discount (>= 20%)
+          - Moderate discount (10-20%)
+          - Light discount (0-10%)
+          - no discount (0%)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Big discount", "Moderate discount", "Light discount", "no discount"]
