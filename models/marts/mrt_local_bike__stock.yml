@@ -1,0 +1,108 @@
+version: 2
+
+models:
+  - name: mart_stock_analysis
+    description: >
+      Table d'analyse des stocks par magasin et produit, incluant des indicateurs de statut de stock, de valeur d'inventaire et de priorité d'alerte.
+      Basée sur la table `int_local_bike__stocks`.
+    columns:
+      - name: store_id
+        description: Identifiant unique du magasin.
+        data_tests:
+          - not_null
+
+      - name: store_name
+        description: Nom du magasin.
+        data_tests:
+          - not_null
+
+      - name: store_city
+        description: Ville du magasin.
+
+      - name: store_state
+        description: État du magasin.
+
+      - name: product_id
+        description: Identifiant unique du produit.
+        data_tests:
+          - not_null
+
+      - name: product_name
+        description: Nom du produit.
+        data_tests:
+          - not_null
+
+      - name: category_name
+        description: Nom de la catégorie du produit.
+        data_tests:
+          - not_null
+
+      - name: brand_name
+        description: Nom de la marque du produit.
+        data_tests:
+          - not_null
+
+      - name: model_year
+        description: Année du modèle du produit.
+        data_tests:
+          - not_null
+
+      - name: product_price
+        description: Prix de vente du produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: current_stock_qty
+        description: Quantité actuelle en stock.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: inventory_value
+        description: Valeur totale de l'inventaire pour ce produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: is_out_of_stock
+        description: Indique si le produit est en rupture de stock (true/false).
+        data_tests:
+          - not_null
+
+      - name: has_never_sold
+        description: Indique si le produit n'a jamais été vendu (true/false).
+        data_tests:
+          - not_null
+
+      - name: stock_status
+        description: >
+          Statut du stock :
+          - Out of Stock (0 unité)
+          - Critical Low (1-5 unités)
+          - Low Stock (6-10 unités)
+          - Adequate (11-50 unités)
+          - High Stock (51-100 unités)
+          - Overstock (100+ unités)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Out of Stock", "Critical Low", "Low Stock", "Adequate", "High Stock", "Overstock"]
+
+      - name: alert_priority
+        description: >
+          Priorité d'alerte pour la gestion du stock :
+          - 1 (rupture de stock)
+          - 2 (stock critique)
+          - 3 (stock bas)
+          - 4 (produit jamais vendu)
+          - 5 (surstock)
+          - NULL (pas d'alerte)
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, null]

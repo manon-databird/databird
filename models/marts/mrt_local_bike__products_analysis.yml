@@ -1,0 +1,299 @@
+version: 2
+
+models:
+  - name: mart_products_analysis
+    description: >
+      Table d'analyse des performances produits, incluant des métriques de volume, revenu, prix, temps, classement et rentabilité.
+      Basée sur la table `int_local_bike__products`.
+    columns:
+      - name: product_id
+        description: Identifiant unique du produit.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: product_name
+        description: Nom du produit.
+        data_tests:
+          - not_null
+
+      - name: brand_id
+        description: Identifiant unique de la marque.
+        data_tests:
+          - not_null
+
+      - name: brand_name
+        description: Nom de la marque.
+        data_tests:
+          - not_null
+
+      - name: category_id
+        description: Identifiant unique de la catégorie.
+        data_tests:
+          - not_null
+
+      - name: category_name
+        description: Nom de la catégorie.
+        data_tests:
+          - not_null
+
+      - name: model_year
+        description: Année du modèle du produit.
+        data_tests:
+          - not_null
+
+      - name: product_price
+        description: Prix de vente du produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_orders
+        description: Nombre total de commandes incluant ce produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_line_items
+        description: Nombre total de lignes de commande pour ce produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_quantity_sold
+        description: Quantité totale vendue de ce produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_gross_revenue
+        description: Chiffre d'affaires brut total généré par ce produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_net_revenue
+        description: Chiffre d'affaires net total généré par ce produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_discount_amount
+        description: Montant total des remises appliquées sur ce produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: avg_revenue_per_line
+        description: Chiffre d'affaires moyen par ligne de commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: avg_selling_price
+        description: Prix de vente moyen du produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: min_selling_price
+        description: Prix de vente minimum du produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: max_selling_price
+        description: Prix de vente maximum du produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: avg_discount_rate
+        description: Taux de remise moyen appliqué sur ce produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: overall_dicount_rate
+        description: Taux de remise global appliqué sur ce produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: avg_price_reduction_amount
+        description: Montant moyen de réduction de prix.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: first_sale_date
+        description: Date de la première vente du produit.
+        data_tests:
+          - not_null
+
+      - name: last_sale_date
+        description: Date de la dernière vente du produit.
+
+      - name: sales_period_days
+        description: Durée (en jours) entre la première et la dernière vente.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: units_per_month
+        description: Nombre moyen d'unités vendues par mois.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: revenue_per_month
+        description: Chiffre d'affaires moyen par mois.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: orders_per_month
+        description: Nombre moyen de commandes par mois.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: revenue_rank
+        description: Classement du produit par chiffre d'affaires.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: quantity_rank
+        description: Classement du produit par quantité vendue.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: order_count_rank
+        description: Classement du produit par nombre de commandes.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: category_revenue_rank
+        description: Classement du produit par chiffre d'affaires dans sa catégorie.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: brand_revenue_rank
+        description: Classement du produit par chiffre d'affaires dans sa marque.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_products
+        description: Nombre total de produits dans la catégorie/marque.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: revenue_percentile
+        description: Percentile de chiffre d'affaires du produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: velocity_category
+        description: >
+          Catégorie de vitesse de vente :
+          - Fast Mover (10+ unités/mois)
+          - Medium Mover (5-9 unités/mois)
+          - Slow Mover (1-4 unités/mois)
+          - Very Slow Mover (moins d'1 unité/mois)
+          - No Movement (0 unité/mois)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Fast Mover", "Medium Mover", "Slow Mover", "Very Slow Mover", "No Movement"]
+
+      - name: revenue_tier
+        description: >
+          Niveau de chiffre d'affaires :
+          - Top 20 (classement <= 20)
+          - Top 50 (classement <= 50)
+          - Top 100 (classement <= 100)
+          - Top 20% (percentile <= 0.20)
+          - Top 50% (percentile <= 0.50)
+          - Long Tail (autres)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Top 20", "Top 50", "Top 100", "Top 20%", "Top 50%", "Long Tail"]
+
+      - name: product_age_category
+        description: >
+          Catégorie d'âge du produit :
+          - 2018 (modèle 2018 ou plus récent)
+          - 1 year old (modèle 2017)
+          - 2-3 Years Old (modèle 2015-2016)
+          - 4+ Years Old (modèle avant 2015)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["2018", "1 year old", "2-3 Years Old", "4+ Years Old"]
+
+      - name: performance_classification
+        description: >
+          Classification de performance :
+          - Star Product (Top 20 + 5+ unités/mois)
+          - Solid Performer (Top 100 + 3+ unités/mois)
+          - Poor Performer (hors Top 100 + moins d'1 unité/mois)
+          - No Sales (0 unité/mois)
+          - Average Performer (autres)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Star Product", "Solid Performer", "Poor Performer", "No Sales", "Average Performer"]
+
+      - name: profitability_quadrant
+        description: >
+          Quadrant de rentabilité :
+          - High Margin High Volume (remise < 10% + 5+ unités/mois)
+          - High Margin Low Volume (remise < 10% + moins de 5 unités/mois)
+          - Low Margin High Volume (remise >= 10% + 5+ unités/mois)
+          - Low Margin Low Volume (remise >= 10% + moins de 5 unités/mois)
+          - Uncategorized (autres)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["High Margin High Volume", "High Margin Low Volume", "Low Margin High Volume", "Low Margin Low Volume", "Uncategorized"]
