@@ -1,0 +1,195 @@
+version: 2
+
+models:
+  - name: mrt_local_bike__customers_analysis
+    description: >
+      Table enrichie des clients avec des métriques clés, des segments et des indicateurs de valeur.
+      Basée sur la table `int_local_bike__customers_aggregated`.
+    columns:
+      - name: customer_id
+        description: Identifiant unique du client.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: customer_name
+        description: Nom complet du client.
+        data_tests:
+          - not_null
+
+      - name: customer_city
+        description: Ville de résidence du client.
+
+      - name: customer_state
+        description: État ou région de résidence du client.
+
+      - name: total_orders
+        description: Nombre total de commandes passées par le client.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      
+
+      - name: shipped_orders
+        description: Nombre de commandes expédiées.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: customer_lifetime_value
+        description: Valeur totale générée par le client (chiffre d'affaires cumulé).
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: avg_order_value
+        description: Valeur moyenne par commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: min_order_value
+        description: Valeur minimale d'une commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: max_order_value
+        description: Valeur maximale d'une commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_items_purchased
+        description: Nombre total d'articles achetés.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0 
+
+      - name: avg_items_per_order
+        description: Nombre moyen d'articles par commande.
+        data_tests:
+          - not_null
+
+      - name: first_order_date
+        description: Date de la première commande.
+        data_tests:
+          - not_null
+
+      - name: last_order_date
+        description: Date de la dernière commande.
+        data_tests:
+          - not_null
+
+      - name: customer_lifetime
+        description: Durée (en jours) depuis la première commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: revenue_per_order
+        description: Chiffre d'affaires moyen par commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: items_per_order
+        description: Nombre moyen d'articles par commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: is_one_time_buyer
+        description: Indique si le client n'a passé qu'une seule commande.
+        data_tests:
+          - not_null
+        
+
+      - name: has_repeat_purchase
+        description: Indique si le client a passé plusieurs commandes.
+        data_tests:
+          - not_null
+
+      - name: orders_per_month
+        description: Fréquence moyenne de commandes par mois.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: customer_type
+        description: >
+          Catégorie du client basée sur le nombre de commandes :
+          - One-Time Buyer (1 commande)
+          - Repeat Buyer (2-3 commandes)
+          - Loyal Customer (4+ commandes)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["One-Time Buyer", "Repeat Buyer", "Loyal Customer"]
+
+      - name: clv_tier
+        description: >
+          Niveau de valeur du client basé sur le percentile de chiffre d'affaires :
+          - High Value (top 25%)
+          - Medium-High Value (25-50%)
+          - Medium-Low Value (50-75%)
+          - Low Value (bottom 25%)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["High Value", "Medium-High Value", "Medium-Low Value", "Low Value"]
+
+      - name: customer_segment
+        description: >
+          Segment du client basé sur la combinaison de fidélité et de valeur :
+          - VIP - Loyal & High Value
+          - Loyal - Regular Value
+          - Repeat - High Potential
+          - Repeat - Standard
+          - One-Time - High Value
+          - One-Time - Standard
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [
+                  "VIP - Loyal & High Value",
+                  "Loyal - Regular Value",
+                  "Repeat - High Potential",
+                  "Repeat - Standard",
+                  "One-Time - High Value",
+                  "One-Time - Standard"
+                ]
+
+      - name: customer_lifetime_stage
+        description: >
+          Stade de la relation client basé sur la durée depuis la première commande :
+          - New Customer (0-1 mois)
+          - Recent Customer (1-3 mois)
+          - Established (3-6 mois)
+          - Long-term (6-12 mois)
+          - Veteran (12+ mois)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [
+                  "New Customer (0-1 month)",
+                  "Recent Customer (1-3 months)",
+                  "Established (3-6 months)",
+                  "Long-term (6-12 months)",
+                  "Veteran (12+ months)"
+                ]

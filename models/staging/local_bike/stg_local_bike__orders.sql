@@ -12,9 +12,9 @@ renamed as (
         order_id,
         customer_id,
         order_status,
-        order_date,
-        required_date,
-        CAST(shipped_date AS DATE) AS shipped_date,
+        SAFE_CAST(NULLIF(TRIM(CAST(order_date AS STRING)), 'NULL') AS DATE) AS order_date,
+        SAFE_CAST(NULLIF(TRIM(CAST(required_date AS STRING)), 'NULL') AS DATE) AS required_date,
+        SAFE_CAST(NULLIF(TRIM(CAST(shipped_date AS STRING)), 'NULL') AS DATE) AS shipped_date,
         store_id,
         staff_id
 
