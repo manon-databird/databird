@@ -1,0 +1,165 @@
+version: 2
+
+models:
+  - name: int_local_bike__orders_enriched
+    description: >
+      Modèle intermédiaire enrichissant les commandes avec les informations client,
+      magasin, staff ainsi que des métriques temporelles
+      Grain : une ligne = une commande (order_id).
+
+
+    columns:
+      - name: order_id
+        description: Identifiant unique de la commande.
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments: 
+                to: ref('stg_local_bike__orders')
+                field: order_id
+
+      - name: customer_id
+        description: Identifiant du client.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_local_bike__customers')
+                field: customer_id
+
+      - name: store_id
+        description: Identifiant du magasin où la commande est gérée.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_local_bike__stores')
+                field: store_id
+
+      - name: staff_id
+        description: Staff responsable de la commande.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_local_bike__staffs')
+                field: staff_id
+
+      - name: order_status
+        description: Statut de la commande.
+        tests:
+          - not_null
+
+      - name: order_date
+        description: Date de création de la commande.
+        tests:
+          - not_null
+
+      - name: required_date
+        description: Date attendue de livraison.
+
+      - name: shipped_date
+        description: Date d’expédition.
+
+      - name: customer_name
+        description: Nom complet du client.
+
+      - name: customer_city
+        description: Ville du client.
+
+      - name: customer_state
+        description: État / région du client.
+
+      - name: store_name
+        description: Nom du magasin.
+
+      - name: store_city
+        description: Ville du magasin.
+
+      - name: store_state
+        description: État / région du magasin.
+
+      - name: staff_name
+        description: Nom complet du staff en charge.
+
+      - name: active
+        description: Indique si le staff est actif.
+
+      - name: manager_id
+        description: Identifiant du manager du staff.
+
+      - name: days_to_ship
+        description: Nombre de jours entre commande et expédition.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: days_expected_delivery
+        description: Délai prévu entre commande et required_date.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: variance_day_from_required
+        description: Écart entre shipped_date et required_date (positif = retard).
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: -30     # possible early shipment
+
+ 
+      - name: is_shipped
+        description: TRUE si la commande est expédiée.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments: 
+                values: [true, false]
+
+      - name: is_completed
+        description: TRUE si order_status = 4.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments: 
+                values: [true, false]
+
+      - name: is_same_state
+        description: TRUE si client et store sont dans le même état.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: is_same_city
+        description: TRUE si client et store sont dans la même ville.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: is_required_date_missing
+        description: TRUE si required_date est manquant.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments: 
+                values: [true, false]
+
+      - name: is_ship_date_missing
+        description: TRUE si shipped_date est manquant.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: order_year
+        description: Année de la commande.
+
+      - name: order_month
+        description: Mois de la commande (numérique 1-12).
+
+      - name: order_quarter
+        description: Trimestre de la commande.
+
+      - name: order_year_month
+        description: Format année-mois

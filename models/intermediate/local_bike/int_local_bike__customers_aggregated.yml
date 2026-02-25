@@ -1,0 +1,113 @@
+version: 2
+
+models:
+  - name: int_local_bike__customers_aggregated
+    description: >
+      Agrégation intermédiaire au grain client (1 ligne par customer_id) calculant les KPI
+      de commandes, revenus, items et temporalité (first/last order, lifetime).
+      Construit à partir de int_local_bike__orders_enriched et int_local_bike__order_items_enriched.
+
+    columns:
+      - name: customer_id
+        description: Identifiant unique du client (grain du modèle).
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments: 
+                to: ref('stg_local_bike__customers')
+                field: customer_id
+
+      - name: customer_name
+        description: Nom complet 
+        data_tests:
+          - not_null
+
+      - name: customer_city
+        description: Ville du client.
+
+      - name: customer_state
+        description: État/Région du client.
+
+      - name: total_orders
+        description: Nombre total de commandes du client (distinctes).
+        data_tests:
+          - not_null
+
+      - name: shipped_orders
+        description: Nombre de commandes expédiées du client.
+        data_tests:
+          - not_null
+
+      - name: total_revenue
+        description: Revenu total généré par le client (somme des order_revenue).
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: avg_order_value
+        description: Valeur moyenne par commande du client.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: min_order_value
+        description: Valeur minimale d'une commande du client.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: max_order_value
+        description: Valeur maximale d'une commande du client.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_items_purchased
+        description: Nombre total d'items achetés par le client.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: avg_items_per_order
+        description: Nombre moyen d'items par commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: first_order_date
+        description: Date de la première commande du client.
+        data_tests:
+          - not_null
+
+      - name: last_order_date
+        description: Date de la dernière commande du client.
+        data_tests:
+          - not_null
+
+      - name: customer_lifetime
+        description: Durée (en jours) entre la première et la dernière commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: is_one_time_buyer
+        description: Flag TRUE si le client n'a qu'une seule commande (total_orders = 1).
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+      - name: has_repeat_purchase
+        description: Flag TRUE si le client a au moins deux commandes (total_orders >= 2).
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]

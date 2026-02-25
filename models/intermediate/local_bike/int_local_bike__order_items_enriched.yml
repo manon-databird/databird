@@ -1,0 +1,146 @@
+version: 2
+
+models:
+  - name: int_local_bike__order_items_enriched
+    description: >
+      Modèle intermédiaire enrichissant les order_items avec les données produits,
+      marques et catégories. Une ligne = un produit d'une commande (grain : order_item_id).
+
+    columns:
+      - name: order_id
+        description: Identifiant de la commande.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments: 
+                to: ref('stg_local_bike__orders')
+                field: order_id
+
+      - name: item_id
+        description: Identifiant de l'item dans la commande.
+
+      - name: order_item_id
+        description: Clé unique de la ligne produit de commande.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: product_id
+        description: Identifiant produit.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_local_bike__products')
+                field: product_id
+
+      - name: item_quantity
+        description: Quantité commandée du produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+
+      - name: item_price
+        description: Prix appliqué au moment de la commande.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: discount
+        description: Taux de réduction appliqué sur le produit (0-1).
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: product_name
+        description: Nom du produit.
+
+      - name: brand_id
+        description: Identifiant de la marque.
+        data_tests:
+          - relationships:
+              arguments: 
+                to: ref('stg_local_bike__brands')
+                field: brand_id
+
+      - name: category_id
+        description: Identifiant de la catégorie.
+        data_tests:
+          - relationships:
+              arguments: 
+                to: ref('stg_local_bike__categories')
+                field: category_id
+
+      - name: model_year
+        description: Année du modèle produit.
+
+      - name: product_price
+        description: Prix catalogue du produit.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: category_name
+        description: Nom de la catégorie produit.
+
+      - name: brand_name
+        description: Nom de la marque produit.
+
+      - name: gross_revenue
+        description: Revenue brut (prix * quantité).
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: net_revenue
+        description: Revenu net après remise.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: discount_amount
+        description: Montant de remise.
+
+      - name: discount_rate
+        description: Taux de remise (0 = pas de remise).
+
+      - name: price_reduction_amount
+        description: Différence entre prix catalogue et prix commandé.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: price_reduction_rate
+        description: Taux de réduction vs prix catalogue.
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: has_discount
+        description: TRUE si une remise est appliquée.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: is_below_list_price
+        description: TRUE si le prix commandé < prix catalogue.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: is_multi_item
+        description: TRUE si quantité > 1.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]

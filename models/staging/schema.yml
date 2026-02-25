@@ -1,204 +1,201 @@
-
 version: 2
 
 models:
     - name: stg_local_bike__brands
-      description: standardized bicycle brand reference table.
+      description: Table de référence standardisée des marques de vélos.
       columns:
         - name: brand_id
-          description: unique identifier for brands
+          description: identifiant unique des marques
           data_tests:
              - unique
              - not_null
     
         - name: brand_name
-          description: name of brand
+          description: nom de la marque
 
     - name: stg_local_bike__categories
-      description: standardized product categories table.
+      description: Table standardisée des catégories de produits.
       columns: 
         - name: category_id
-          description: unique identifier for categories
+          description: identifiant unique des catégories
           data_tests:
             - unique
             - not_null
         - name: category_name
-          description : name of each category of bicycle
+          description : nom de chaque catégorie de vélo
     
     - name: stg_local_bike__customers
-      description: standardized customers reference table
+      description: Table de référence standardisée des clients.
       columns:
         - name: customer_id
-          description: unique identifier for customer
+          description: identifiant unique du client
           data_tests:
             - unique
             - not_null
         - name: first_name
-          description: customer's first name
+          description: prénom du client
         - name: last_name
-          description: customer's last name
+          description: nom de famille du client
         - name: phone
-          description: customer's phone number
+          description: numéro de téléphone du client
         - name: email
-          description: customer's email
+          description: adresse email du client
         - name: street
-          description: street name of the customer
+          description: nom de la rue du client
         - name: city
-          description: customer's city
+          description: ville du client
         - name: state
-          description: customer's state
+          description: état/région du client
         - name: zip_code
-          description: customer's postal code adress
+          description: code postal du client
     
     - name: stg_local_bike__order_items
-      description: standardized order items table reference
+      description: Table standardisée des lignes de commande.
       columns:
         - name: order_item_id
-          description: unique identifier for order items (by concatenation f order_id and item_id)
+          description: identifiant unique de la ligne de commande (concaténation order_id + item_id)
           data_tests:
             - unique
             - not_null
         - name: order_id
-          description: identifier of a specific customer order
+          description: identifiant d’une commande client
         - name: item_id
-          description: identifier of a specific item
+          description: identifiant d’un item dans la commande
         - name: product_id
-          description: identifier of a specific product
+          description: identifiant du produit associé
         - name: quantity
-          description: number of item in a customer order
+          description: quantité de cet article dans la commande
         - name: list_price
-          description: public price before any discount
+          description: prix public avant remise
         - name: discount
-          description: discount for a specific item
+          description: remise appliquée sur cet article
     
     - name: stg_local_bike__orders
-      description: standardized orders table
+      description: Table standardisée des commandes.
       columns:
         - name: order_id
-          description: unique identifier for a specific order
+          description: identifiant unique d’une commande
           data_tests:
             - unique
             - not_null
         - name: customer_id
-          description: unique identifier for each customer, foreign key
+          description: identifiant du client (clé étrangère)
           data_tests:
             - relationships:
                 field: customer_id
                 to: ref('stg_local_bike__customers')
         - name: order_status
-          description: order fulfillment status
+          description: statut de traitement de la commande
         - name: order_date
-          description: order creation date
+          description: date de création de la commande
         - name: required_date
-          description: date by which the order is expected to be delivered
+          description: date attendue de livraison
         - name: shipped_date
-          description: date when the order was shipped
+          description: date d’expédition
         - name: store_id
-          description : unique identifier for a specific store, foreign key for the store table
+          description : identifiant unique du magasin associé (clé étrangère)
           data_tests:
             - relationships:
                 field: store_id
                 to: ref('stg_local_bike__stores')
         - name: staff_id
-          description: unique identifier for each staff member, foreign key of staff table
+          description: identifiant du membre du personnel ayant géré la commande (clé étrangère)
           data_tests:
             - relationships:
                 field: staff_id
                 to: ref('stg_local_bike__staffs')
     
     - name: stg_local_bike__products
-      description: standardized table for products
+      description: Table standardisée des produits.
       columns : 
         - name: product_id
-          description: unique identifier for a product 
+          description: identifiant unique d’un produit
           data_tests:
             - unique
             - not_null
         - name: product_name
-          description : name of a specific product
+          description : nom du produit
         - name: brand_id  
-          description : identifier of a specific brand, foreign key to brand table
+          description : identifiant de la marque (clé étrangère)
           data_tests:
             - relationships:
                 field: brand_id
                 to: ref('stg_local_bike__brands')
         - name: category_id
-          description: identifier for a specific category, foreign key to categories table 
+          description: identifiant de la catégorie (clé étrangère)
           data_tests:
             - relationships:
                 field: category_id
                 to: ref('stg_local_bike__categories')
         - name: model_year
-          description: product model release year
+          description: année du modèle
         - name: list_price
-          description: public price before any discount
+          description: prix public avant remise
     
     - name: stg_local_bike__staffs
-      description : reference table for staff members 
+      description : Table de référence des employés.
       columns: 
         - name: staff_id
-          description: unique identifier for staff member 
+          description: identifiant unique du membre du personnel
           data_tests:
             - unique
             - not_null
         - name: first_name
-          description: staff member's first name
+          description: prénom du membre du personnel
         - name: last_name
-          description: staff member's last name
+          description: nom du membre du personnel
         - name: email
-          description: staff member's email
+          description: email du membre du personnel
         - name: phone
-          description: staff member's phone number
+          description: numéro de téléphone du membre du personnel
         - name: active
-          description: boolean flag showing if the employee is currently employed
-        - name : store_id
-          description : unique identifier for each store; foreign key of store table
+          description: indique si l’employé est actuellement actif
+        - name: store_id
+          description : identifiant du magasin auquel le personnel est rattaché (clé étrangère)
           data_tests:
             - relationships:
                 field: store_id
                 to: ref('stg_local_bike__stores')
         - name: manager_id
-          description: identifier of the staff member's direct manager
+          description: identifiant du manager du membre du personnel
     
     - name: stg_local_bike__stocks
-      description: current inventory levels by store and product
+      description: Niveau de stock actuel par magasin et par produit.
       columns: 
         - name: store_id
-          description: identifier of the store, foreign key for table stores
+          description: identifiant du magasin (clé étrangère)
           data_tests:
             - relationships:
                 field: store_id
                 to: ref('stg_local_bike__stores')
         - name: product_id
-          description: identifier of the product
+          description: identifiant du produit (clé étrangère)
           data_tests:
             - relationships:
                 field: product_id
                 to: ref('stg_local_bike__products')
         - name: quantity
-          description: available stock quantity for the product in the store
+          description: quantité disponible en stock dans le magasin
 
     - name: stg_local_bike__stores
-      description: store reference information including contact and location details
+      description: Table de référence des magasins, incluant coordonnées et localisation.
       columns:
         - name: store_id
-          description: unique identifier of the store
+          description: identifiant unique du magasin
           data_tests:
             - unique
             - not_null
         - name: store_name
-          description: name of the store
+          description: nom du magasin
         - name: phone
-          description: store contact phone number
+          description: numéro de téléphone du magasin
         - name: email
-          description: store contact email adress
+          description: adresse email du magasin
         - name: street
-          description: street adress of the store
+          description: adresse du magasin (rue)
         - name: city
-          description: city where the store is located
+          description: ville où se situe le magasin
         - name: state
-          description: state of the store
+          description: état/région du magasin
         - name: zip_code
-          description: postal_code of the store
-
-
+          description: code postal du magasin

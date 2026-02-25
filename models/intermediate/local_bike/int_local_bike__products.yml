@@ -1,0 +1,165 @@
+version: 2
+
+models:
+  - name: int_local_bike__products
+    description: >
+      KPIs de performance par produit (volume, revenus, pricing, temporalité et classements),
+      calculés à partir des lignes de commandes expédiées. Grain = 1 ligne par product_id.
+
+    columns:
+      - name: product_id
+        description: Identifiant unique du produit.
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments: 
+                to: ref('stg_local_bike__products')
+                field: product_id
+
+      - name: product_name
+        description: Libellé du produit.
+        data_tests:
+          - not_null
+
+      - name: brand_id
+        description: Identifiant de la marque.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_local_bike__brands')
+                field: brand_id
+
+      - name: brand_name
+        description: Nom de la marque.
+
+      - name: category_id
+        description: Identifiant de la catégorie.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_local_bike__categories')
+                field: category_id
+
+      - name: category_name
+        description: Nom de la catégorie.
+
+      - name: model_year
+        description: Année du modèle produit.
+
+      - name: product_price
+        description: Prix catalogue du produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_orders
+        description: Nombre de commandes distinctes contenant le produit (expédiées).
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_line_items
+        description: Nombre total de lignes (order_item_id) pour le produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_quantity_sold
+        description: Quantité totale vendue du produit.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_gross_revenue
+        description: Revenu brut total (avant remise).
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_net_revenue
+        description: Revenu net total (après remise).
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: total_discount_amount
+        description: Montant total de remise (somme des discount_amount).
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: avg_revenue_per_line
+        description: Revenu net moyen par ligne (order_item_id).
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: overall_dicount_rate
+        description: >
+          Taux de remise global = total_discount_amount / total_gross_revenue (coquille dans le nom conservée).
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: avg_selling_price
+        description: Prix de vente moyen observé.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: min_selling_price
+        description: Prix de vente minimum observé.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: max_selling_price
+        description: Prix de vente maximum observé.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: avg_discount_rate
+        description: Taux de remise moyen observé (0–1).
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: avg_price_reduction_amount
+        description: Ecart moyen = product_price - avg_selling_price (peut être négatif si vente > catalogue).
+
+      - name: first_sale_date
+        description: Date de première vente (expédiée).
+        data_tests:
+          - not_null
+
+      - name: last_sale_date
+        description: Date de dernière vente (expédiée).
+        data_tests:
+          - not_null
+
+      - name: sales_period_days
+        description: Nombre de jours entre première et dernière vente.
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+
