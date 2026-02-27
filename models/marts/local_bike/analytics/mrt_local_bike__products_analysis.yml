@@ -1,0 +1,168 @@
+version: 2
+
+models:
+  - name: mrt_local_bike__products_analysis
+    description: >
+      Mart d'analyse produit. 
+      Grain : 1 ligne par product_id.
+      Sources : int_local_bike__dim_products + int_local_bike__product_orders.
+    columns:
+
+      - name: product_id
+        description: Identifiant unique du produit (clé primaire).
+        tests:
+          - not_null
+          - unique
+
+      - name: product_name
+        description: Nom commercial du produit.
+
+      - name: brand_id
+        description: Identifiant de la marque.
+
+      - name: brand_name
+        description: Nom de la marque.
+
+      - name: category_id
+        description: Identifiant de la catégorie.
+
+      - name: category_name
+        description: Nom de la catégorie.
+
+      - name: model_year
+        description: Année de modèle du produit.
+
+      - name: product_price
+        description: Prix catalogue officiel du produit.
+
+      - name: total_orders
+        description: Nombre de commandes distinctes ayant inclus ce produit.
+
+      - name: total_line_items
+        description: Nombre total de lignes de commande pour ce produit.
+
+      - name: total_quantity_sold
+        description: Quantité totale vendue sur toute la période.
+
+      - name: total_gross_revenue
+        description: Revenu brut total généré (avant remises).
+
+      - name: total_net_revenue
+        description: Revenu net total généré (après remises).
+
+      - name: total_discount_amount
+        description: Montant total des remises accordées.
+
+      - name: avg_revenue_per_line
+        description: Revenu net moyen par ligne de commande.
+
+      - name: avg_selling_price
+        description: Prix de vente moyen effectif constaté.
+
+      - name: min_selling_price
+        description: Prix de vente minimum constaté.
+
+      - name: max_selling_price
+        description: Prix de vente maximum constaté.
+
+      - name: avg_discount_rate
+        description: Taux de remise moyen par ligne (entre 0 et 1).
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0  
+              max_value: 1 
+
+      - name: overall_discount_rate
+        description: Taux de remise global calculé sur l'ensemble du revenu brut.
+
+      - name: avg_price_reduction_amount
+        description: Réduction de prix moyenne en valeur absolue (product_price - avg_selling_price).
+
+      
+      - name: first_sale_date
+        description: Date de la première vente enregistrée.
+
+      - name: last_sale_date
+        description: Date de la dernière vente enregistrée.
+
+      - name: sales_period_days
+        description: Durée de commercialisation en jours.
+
+      - name: units_per_month
+        description: Vélocité de vente en unités par mois sur la période de commercialisation.
+
+      - name: revenue_per_month
+        description: Revenu net moyen généré par mois sur la période de commercialisation.
+
+      - name: orders_per_month
+        description: Nombre moyen de commandes par mois sur la période de commercialisation.
+
+      - name: revenue_rank
+        description: Rang du produit par revenu net décroissant (1 = meilleur revenu).
+
+      - name: quantity_rank
+        description: Rang du produit par quantité vendue décroissante.
+
+      - name: order_count_rank
+        description: Rang du produit par nombre de commandes décroissant.
+
+      - name: category_revenue_rank
+        description: Rang du produit par revenu net au sein de sa catégorie.
+
+      - name: brand_revenue_rank
+        description: Rang du produit par revenu net au sein de sa marque.
+
+      - name: total_products
+        description: Nombre total de produits dans le catalogue (utilisé pour les percentiles).
+
+      - name: revenue_percentile
+        description: Percentile de revenu du produit (revenue_rank / total_products). Proche de 0 = meilleur.
+
+      - name: velocity_category
+        description: >
+          Catégorie de vélocité des ventes basée sur les unités vendues par mois.
+          
+        tests:
+          - accepted_values:
+              arguments: 
+                values: ['Fast Mover', 'Medium Mover', 'Slow Mover', 'Very Slow Mover', 'No Movement']
+
+      - name: revenue_tier
+        description: >
+          Tier de revenu basé sur le classement absolu et relatif.
+          
+        tests:
+          - accepted_values:
+              arguments: 
+                values: ['Top 20', 'Top 50', 'Top 100', 'Top 20%', 'Top 50%', 'Long Tail']
+
+      - name: product_age_category
+        description: >
+          Catégorie d'âge du produit basée sur l'année de modèle.
+        
+        tests:
+          - accepted_values:
+              arguments: 
+               values: ['2018+', '1 Year Old', '2-3 Years Old', '4+ Years Old']
+
+      - name: performance_classification
+        description: >
+          Classification de performance croisant rang de revenu et vélocité.
+        tests:
+          - accepted_values:
+              arguments: 
+                values: ['Star Product', 'Solid Performer', 'Average Performer', 'Poor Performer', 'No Sales']
+
+      - name: profitability_quadrant
+        description: >
+          Quadrant de rentabilité croisant taux de remise et vélocité de vente.
+          
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                - 'High Margin High Volume'
+                - 'High Margin Low Volume'
+                - 'Low Margin High Volume'
+                - 'Low Margin Low Volume'
+                - 'Uncategorized'

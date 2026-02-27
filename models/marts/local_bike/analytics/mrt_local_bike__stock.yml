@@ -1,0 +1,85 @@
+version: 2
+
+models:
+  - name: mrt_local_bike__stock
+    description: >
+      Mart de gestion des stocks. Vue consolidée du niveau de stock actuel par
+      produit et par magasin
+      
+      Grain : 1 ligne par (store_id, product_id).
+      Sources : int_local_bike__fct_stock_snapshot + int_local_bike__dim_products
+              + int_local_bike__dim_stores.
+    columns:
+
+      - name: store_id
+        description: Identifiant du magasin (clé étrangère vers dim_stores).
+        tests:
+          - not_null
+
+      - name: store_name
+        description: Nom du magasin.
+
+      - name: store_city
+        description: Ville du magasin.
+
+      - name: store_state
+        description: État du magasin.
+
+      - name: product_id
+        description: Identifiant du produit (clé étrangère vers dim_products).
+        tests:
+          - not_null
+
+      - name: product_name
+        description: Nom du produit.
+
+      - name: category_name
+        description: Catégorie du produit.
+
+      - name: brand_name
+        description: Marque du produit.
+
+      - name: model_year
+        description: Année de modèle du produit.
+
+      - name: product_price
+        description: Prix catalogue du produit.
+
+      - name: current_stock_qty
+        description: Quantité actuellement en stock dans ce magasin pour ce produit.
+        tests:
+          - not_null
+
+      - name: inventory_value
+        description: Valeur totale du stock (current_stock_qty * product_price).
+
+      - name: is_out_of_stock
+        description: TRUE si le stock est à zéro.
+        
+
+      - name: has_never_sold
+        description: TRUE si ce produit n'a jamais été vendu dans ce magasin.
+        tests:
+          - not_null
+          
+
+      - name: stock_status
+        description: >
+          Niveau de stock.
+          
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - 'Out of Stock'
+                  - 'Critical Low'
+                  - 'Low Stock'
+                  - 'Adequate'
+                  - 'High Stock'
+                  - 'Overstock'
+
+      - name: alert_priority
+        description: >
+          Niveau de priorité d'alerte opérationnelle (NULL = aucune alerte).
+        

@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: int_local_bike__fct_orders
+    description: >
+      Table de faits des commandes. Chaque ligne représente une commande unique
+      Grain : 1 ligne par order_id.
+      Source : stg_local_bike__orders.
+    columns:
+      - name: order_id
+        description: Identifiant unique de la commande (clé primaire).
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: Identifiant du client (clé étrangère vers dim_customers).
+        tests:
+          - not_null
+
+      - name: store_id
+        description: Identifiant du magasin (clé étrangère vers dim_stores).
+        tests:
+          - not_null
+
+      - name: staff_id
+        description: Identifiant du vendeur responsable de la commande (clé étrangère vers dim_staffs).
+        tests:
+          - not_null
+
+      - name: order_date
+        description: Date à laquelle la commande a été passée.
+        tests:
+          - not_null
+
+      - name: required_date
+        description: Date de livraison souhaitée par le client. Peut être NULL.
+
+      - name: shipped_date
+        description: Date d'expédition effective de la commande. NULL si non expédiée.
+
+      - name: order_date_id
+        description: Clé de jointure vers dim_date au format YYYYMMDD.
+        tests:
+          - not_null
+
+      - name: days_to_ship
+        description: Nombre de jours entre la commande et l'expédition. NULL si non expédiée.
+
+      - name: days_expected_delivery
+        description: Nombre de jours entre la commande et la date souhaitée de livraison.
+
+      - name: variance_day_from_required
+        description: >
+          Écart en jours entre la date d'expédition et la date requise.
+
+      - name: is_shipped
+        description: TRUE si la commande a été expédiée (shipped_date non NULL).
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+                quote: false
+
+      - name: is_completed
+        description: TRUE si le statut de la commande est "Completed" (order_status = 4).
+        tests:
+          - not_null
+          
+
+      - name: is_required_date_missing
+        description: TRUE si la date de livraison souhaitée est absente.
+        tests:
+          - not_null
+          
+
+      - name: is_ship_date_missing
+        description: TRUE si la date d'expédition est absente (commande non expédiée).
+        

@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: int_local_bike__customer_orders
+    description: >
+      Chaque ligne représente une commande avec ses
+      agrégats de revenu et d'articles.
+      Grain : 1 ligne par order_id.
+      Sources : int_local_bike__fct_orders + int_local_bike__fct_order_items.
+    columns:
+      - name: order_id
+        description: Identifiant unique de la commande (clé primaire).
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: Identifiant du client associé à la commande.
+        tests:
+          - not_null
+
+      - name: order_date
+        description: Date à laquelle la commande a été passée.
+        tests:
+          - not_null
+
+      - name: is_shipped
+        description: TRUE si la commande a été expédiée.
+        tests:
+          - not_null
+          
+
+      - name: is_completed
+        description: TRUE si la commande est au statut "Completed".
+        tests:
+          - not_null
+
+      - name: order_gross_revenue
+        description: Revenu brut total de la commande (somme des lignes avant remise).
+
+      - name: order_net_revenue
+        description: Revenu net total de la commande (somme des lignes après remise).
+
+      - name: order_discount_amount
+        description: Montant total des remises appliquées sur la commande.
+
+      - name: order_item_count
+        description: Nombre de lignes produits dans la commande (nombre d'order_item_id distincts).
+
+      - name: order_total_quantity
+        description: Quantité totale d'articles commandés (somme des item_quantity).
+
+      - name: order_distinct_products
+        description: Nombre de produits distincts dans la commande.
+
+      - name: order_discounted_items
+        description: Nombre de lignes ayant bénéficié d'une remise.
+
+      - name: order_has_discount
+        description: TRUE si au moins une ligne de la commande a une remise.
+        tests:
+          - not_null
+          

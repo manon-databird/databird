@@ -1,0 +1,59 @@
+version: 2
+
+models:
+
+  - name: int_local_bike__product_orders
+    description: >
+      Modèle intermédiaire agrégeant les performances de vente par produit,
+      toutes commandes et tous magasins confondus.
+      Grain : 1 ligne par product_id.
+      Source : int_local_bike__fct_order_items.
+    columns:
+      - name: product_id
+        description: Identifiant unique du produit (clé primaire de l'agrégat).
+        tests:
+          - not_null
+          - unique
+
+      - name: total_orders
+        description: Nombre de commandes distinctes ayant inclus ce produit.
+
+      - name: total_line_items
+        description: Nombre total de lignes de commande pour ce produit.
+
+      - name: total_quantity_sold
+        description: Quantité totale vendue pour ce produit sur toute la période.
+
+      - name: total_gross_revenue
+        description: Revenu brut total généré par ce produit (avant remises).
+
+      - name: total_net_revenue
+        description: Revenu net total généré par ce produit (après remises).
+
+      - name: total_discount_amount
+        description: Montant total des remises accordées sur ce produit.
+
+      - name: avg_revenue_per_line
+        description: Revenu net moyen par ligne de commande pour ce produit.
+
+      - name: avg_selling_price
+        description: Prix de vente moyen constaté (peut différer du prix catalogue si remises).
+
+      - name: min_selling_price
+        description: Prix de vente minimum constaté pour ce produit.
+
+      - name: max_selling_price
+        description: Prix de vente maximum constaté pour ce produit.
+
+      - name: avg_discount_rate
+        description: Taux de remise moyen appliqué sur ce produit (entre 0 et 1).
+
+      - name: first_sale_date
+        description: Date de la première vente enregistrée pour ce produit.
+
+      - name: last_sale_date
+        description: Date de la dernière vente enregistrée pour ce produit.
+
+      - name: sales_period_days
+        description: Nombre de jours entre la première et la dernière vente (durée de vie commerciale).
+

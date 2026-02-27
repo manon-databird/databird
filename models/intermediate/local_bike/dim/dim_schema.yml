@@ -1,0 +1,183 @@
+version: 2
+
+models:
+
+  # DIM CUSTOMERS
+  
+  - name: int_local_bike__dim_customers
+    description: >
+      Dimension clients. Contient les informations d'identité de chaque client
+       Grain : 1 ligne par client.
+    columns:
+      - name: customer_id
+        description: Identifiant unique du client (clé primaire).
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_name
+        description: Nom complet du client (prénom + nom)
+        tests:
+          - not_null
+
+      - name: customer_city
+        description: Ville de résidence du client
+
+      - name: customer_state
+        description: État de résidence du client 
+
+  
+  # DIM PRODUCTS
+
+  - name: int_local_bike__dim_products
+    description: >
+      Dimension produits avec les informations de marque et de catégorie.
+      Grain : 1 ligne par produit.
+    columns:
+      - name: product_id
+        description: Identifiant unique du produit (clé primaire).
+        tests:
+          - not_null
+          - unique
+
+      - name: brand_id
+        description: Identifiant de la marque (clé étrangère vers dim_brands).
+        tests:
+          - not_null
+
+      - name: category_id
+        description: Identifiant de la catégorie (clé étrangère vers dim_categories).
+        tests:
+          - not_null
+
+      - name: product_name
+        description: Nom commercial du produit.
+        tests:
+          - not_null
+
+      - name: brand_name
+        description: Nom de la marque du produit.
+
+      - name: category_name
+        description: Nom de la catégorie du produit (ex. Mountain Bikes, Road Bikes).
+
+      - name: model_year
+        description: Année de modèle du produit.
+        tests:
+          - not_null
+
+      - name: product_price
+        description: Prix catalogue officiel du produit (hors remise).
+        tests:
+          - not_null
+
+
+  # DIM STAFFS
+
+  - name: int_local_bike__dim_staffs
+    description: >
+      Dimension vendeurs/employés. Grain : 1 ligne par employé.
+    columns:
+      - name: staff_id
+        description: >
+          identifiant unique par employé (clé primaire)
+        tests:
+          - not_null
+          - unique
+
+      - name: staff_name
+        description: Nom de l'employé
+
+      - name: active
+        description: statut de l'employé actif ou non (booleen)
+
+      - name: store_id
+        description: identifiant de magasin
+
+      - name: manager_id
+        description: identifiant du manager de l'employé
+
+
+  # DIM STORES
+
+  - name: int_local_bike__dim_stores
+    description: >
+      Dimension magasins. Contient les informations géographiques de chaque point
+      de vente. Grain : 1 ligne par magasin.
+    columns:
+      - name: store_id
+        description: Identifiant unique du magasin (clé primaire)
+        tests:
+          - not_null
+          - unique
+
+      - name: store_name
+        description: Nom commercial du magasin
+        tests:
+          - not_null
+
+      - name: store_city
+        description: Ville du magasin
+
+      - name: store_state
+        description: État du magasin 
+
+
+  # DIM DATE 
+ 
+  - name: int_local_bike__dim_date
+    description: >
+      Dimension date générée. Couvre la plage de dates des commandes du dataset.
+      Grain : 1 ligne par jour calendaire. Utilisée comme table de référence
+      temporelle pour les jointures sur date_id (format YYYYMMDD).
+    columns:
+      - name: date_id
+        description: Clé primaire au format YYYYMMDD (ex. 20230415). Correspond au date_id des tables de faits.
+        tests:
+          - not_null
+          - unique
+
+      - name: date_day
+        description: Date au format DATE (ex. 2023-04-15).
+        tests:
+          - not_null
+
+      - name: day_of_week
+        description: Numéro du jour dans la semaine (1 = Dimanche, 7 = Samedi, convention BigQuery).
+
+      - name: day_name
+        description: Nom du jour en anglais (ex. Monday, Tuesday...).
+
+      - name: day_type
+        description: Type de jour — 'Weekday' ou 'Weekend'.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Weekday', 'Weekend']
+
+      - name: week_of_year
+        description: Numéro de la semaine dans l'année (ISO).
+
+      - name: month_number
+        description: Numéro du mois (1 à 12).
+
+      - name: month_name
+        description: Nom du mois en anglais (ex. January, February...).
+
+      - name: year_month
+        description: Année et mois au format YYYY-MM (ex. 2023-04).
+
+      - name: quarter
+        description: Numéro du trimestre (1 à 4).
+
+      - name: year
+        description: Année calendaire (ex. 2023).
+
+      - name: is_weekend
+        description: TRUE si le jour est un samedi ou dimanche.
+
+      - name: is_first_day_of_month
+        description: TRUE si le jour est le premier jour du mois.
+
+      - name: is_last_day_of_month
+        description: TRUE si le jour est le dernier jour du mois.
