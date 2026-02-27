@@ -1,0 +1,102 @@
+version: 2
+
+models:
+  - name: int_local_bike__fct_order_items
+    description: >
+      Table de faits des lignes de commande. Chaque ligne représente un produit
+      dans une commande 
+      Grain : 1 ligne par order_item_id
+      Sources : stg_local_bike__order_items + stg_local_bike__orders.
+    columns:
+      - name: order_item_id
+        description: Identifiant unique de la ligne de commande (clé primaire)
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        description: Identifiant de la commande parente (clé étrangère vers fct_orders)
+        tests:
+          - not_null
+          - relationships:
+              arguments: 
+                to: ref('int_local_bike__fct_orders')
+                field: order_id
+
+      - name: product_id
+        description: Identifiant du produit commandé (clé étrangère vers dim_products).
+        tests:
+          - not_null
+
+      - name: customer_id
+        description: Identifiant du client (clé étrangère vers dim_customers).
+        tests:
+          - not_null
+
+      - name: store_id
+        description: Identifiant du magasin (clé étrangère vers dim_stores).
+        tests:
+          - not_null
+
+      - name: item_quantity
+        description: Quantité commandée pour ce produit dans cette commande.
+        tests:
+          - not_null
+
+      - name: item_price
+        description: Prix unitaire du produit au moment de la commande.
+        tests:
+          - not_null
+
+      - name: discount_rate
+        description: Taux de remise appliqué à cette ligne (0 si aucune remise). Valeur entre 0 et 1.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+
+      - name: order_date
+        description: Date de la commande.
+        tests:
+          - not_null
+
+      - name: date_id
+        description: Clé de jointure vers dim_date au format YYYYMMDD.
+        tests:
+          - not_null
+
+      - name: gross_revenue
+        description: Revenu brut de la ligne (item_price * item_quantity), avant remise.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+
+      - name: net_revenue
+        description: Revenu net de la ligne après application de la remise.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+
+      - name: discount_amount
+        description: Montant de la remise en valeur absolue (gross_revenue × discount_rate).
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+
+      - name: has_discount
+        description: TRUE si une remise a été appliquée sur cette ligne.
+        tests:
+          - not_null
+
+
+      - name: is_multi_item
+        description: TRUE si la quantité commandée est supérieure à 1.
+        tests:
+          - not_null

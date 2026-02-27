@@ -1,0 +1,130 @@
+version: 2
+
+models:
+  - name: mrt_local_bike__sales_performance
+    description: >
+      Mart principal de performance des ventes. Agrège les transactions au grain
+      journalier avec toutes les dimensions métier.
+      Grain : 1 ligne par (order_date - store - staff - category - brand - customer_state).
+      Sources : int_local_bike__fct_orders + int_local_bike__fct_order_items.
+      
+    columns:
+
+      - name: order_date
+        description: Date de la commande (axe temporel principal).
+        tests:
+          - not_null
+
+      - name: day_name
+        description: Nom du jour de la semaine en anglais (Monday à Sunday).
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+      - name: day_type
+        description: Type de jour — 'Weekday' ou 'Weekend'.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Weekday', 'Weekend']
+
+      - name: store_id
+        description: Identifiant du magasin.
+        tests:
+          - not_null
+
+      - name: store_name
+        description: Nom du magasin.
+
+      - name: store_state
+        description: État du magasin.
+
+      - name: staff_id
+        description: Identifiant du vendeur responsable de la commande.
+
+      - name: staff_name
+        description: Nom du vendeur.
+
+      - name: category_name
+        description: Catégorie des produits vendus.
+
+      - name: brand_name
+        description: Marque des produits vendus.
+
+      - name: customer_state
+        description: État de résidence du client.
+
+      - name: total_orders
+        description: Nombre de commandes distinctes expédiées
+        tests:
+          - not_null
+
+      - name: unique_customers
+        description: Nombre de clients distincts ayant commandé.
+        tests:
+          - not_null
+
+      - name: total_units_sold
+        description: Quantité totale d'articles vendus.
+        tests:
+          - not_null
+
+      - name: total_revenue
+        description: Revenu net total (après remises).
+        tests:
+          - not_null
+
+      - name: gross_revenue
+        description: Revenu brut total (avant remises).
+
+      - name: total_discounts
+        description: Montant total des remises accordées.
+
+      - name: avg_order_value
+        description: Panier moyen net (total_revenue / total_orders).
+
+      - name: revenue_per_unit
+        description: Revenu net moyen par unité vendue.
+
+      - name: discount_rate
+        description: Taux de remise global (total_discounts / gross_revenue). Entre 0 et 1.
+
+      - name: avg_delivery_days
+        description: Délai moyen de livraison en jours (hors commandes sans date d'expédition).
+
+      - name: on_time_orders
+        description: Nombre de commandes livrées à temps ou en avance (variance_day_from_required ≤ 0).
+
+      - name: late_orders
+        description: Nombre de commandes livrées en retard (variance_day_from_required > 0).
+
+      - name: on_time_delivery_rate
+        description: Taux de livraison à temps (on_time_orders / total_orders). Entre 0 et 1.
+
+      - name: delivery_performance_category
+        description: >
+          Catégorie de performance de livraison basée sur le taux de ponctualité.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Excellent', 'Good', 'Needs Improvement', 'Poor']
+
+     
+      - name: in_state_revenue
+        description: Revenu net généré par les clients résidant dans le même état que le magasin.
+
+      - name: out_of_state_revenue
+        description: Revenu net généré par les clients résidant dans un état différent du magasin.
+
+      - name: in_state_revenue_rate
+        description: Part du revenu provenant des clients locaux (in_state_revenue / total_revenue).
+
+      - name: discount_strategy
+        description: >
+          Catégorie de stratégie de remise basée sur le taux global.
+
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Big discount', 'Moderate discount', 'Light discount', 'no discount']

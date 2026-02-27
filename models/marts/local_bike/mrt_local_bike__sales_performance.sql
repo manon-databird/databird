@@ -2,45 +2,32 @@ WITH sales_details AS (
     SELECT 
         o.order_id
         , o.order_date
-        , o.order_year 
-        , o.order_month
-        , o.order_quarter
-        , o.order_year_month
 
         -- store
         , o.store_id
-        , o.store_name
-        , o.store_state
 
         -- staff
         , o.staff_id
-        , o.staff_name
 
         -- customer
         , o.customer_id
-        , o.customer_name
-        , o.customer_state
 
         -- orders
         , o.days_to_ship
         , o.variance_day_from_required
         , o.is_shipped
-        , o.is_same_state
         , o.is_ship_date_missing
         , o.is_required_date_missing
 
         -- items
-        , oi.category_name
-        , oi.brand_name
-        , oi.product_name
         , oi.item_quantity
         , oi.net_revenue
         , oi.gross_revenue
         , oi.discount_amount
         , oi.discount_rate
 
-    FROM {{ ref('int_local_bike__orders_enriched')}} o 
-    INNER JOIN {{ ref('int_local_bike__order_items_enriched')}} oi 
+    FROM {{ ref('int_local_bike__fct_orders')}} o 
+    INNER JOIN {{ ref('int_local_bike__fct_order_items')}} oi 
         USING (order_id)
     WHERE o.is_shipped = TRUE 
 )
@@ -49,10 +36,6 @@ SELECT
 
     -- time
     order_date
-    , order_year
-    , order_month
-    , order_quarter
-    , order_year_month
 
     -- day cat
     , CASE EXTRACT(DAYOFWEEK FROM order_date)
@@ -72,13 +55,7 @@ SELECT
 
      -- business
     , store_id
-    , store_name
-    , store_state
     , staff_id
-    , staff_name
-    , category_name
-    , brand_name
-    , customer_state
 
     -- agreg
     , COUNT(DISTINCT order_id) AS total_orders
@@ -113,10 +90,6 @@ SELECT
         ELSE 'Poor'
     END AS delivery_performance_category
 
-    -- geography
-    , SUM(CASE WHEN is_same_state THEN net_revenue ELSE 0 END) AS in_state_revenue
-    , SUM(CASE WHEN is_same_state = FALSE THEN net_revenue ELSE 0 END) AS out_of_state_revenue
-    , SUM(CASE WHEN is_same_state THEN net_revenue ELSE 0 END) / NULLIF(SUM(net_revenue),0) AS in_state_revenue_rate
 
     -- discount
     , CASE 
@@ -129,15 +102,6 @@ SELECT
     FROM sales_details
     GROUP BY
         order_date
-        , order_year
-        , order_month
-        , order_quarter
-        , order_year_month
         , store_id
-        , store_name
-        , store_state
         , staff_id
-        , staff_name
-        , category_name
-        , brand_name
-        , customer_state
+

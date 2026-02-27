@@ -1,0 +1,122 @@
+version: 2
+
+models:
+  - name: mrt_local_bike__customers_analysis
+    description: >
+      Mart d'analyse client. 
+      Grain : 1 ligne par customer_id.
+      Sources : int_local_bike__customer_orders + int_local_bike__dim_customers.
+    columns:
+
+      - name: customer_id
+        description: Identifiant unique du client (clé primaire).
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_name
+        description: Nom complet du client.
+
+      - name: customer_city
+        description: Ville de résidence du client.
+
+      - name: customer_state
+        description: État de résidence du client 
+
+      
+      - name: total_orders
+        description: Nombre total de commandes passées par le client (tous statuts).
+        tests:
+          - not_null
+
+      - name: shipped_orders
+        description: Nombre de commandes expédiées.
+
+      - name: completed_orders
+        description: Nombre de commandes au statut "Completed".
+
+      
+      - name: total_revenue
+        description: Revenu net total généré par le client sur toute sa durée de vie.
+
+      - name: avg_order_value
+        description: Panier moyen net du client.
+
+      - name: min_order_value
+        description: Montant net de la commande la plus faible.
+
+      - name: max_order_value
+        description: Montant net de la commande la plus élevée.
+
+      
+      - name: total_items_purchased
+        description: Nombre total d'articles achetés par le client.
+
+      - name: avg_items_per_order
+        description: Nombre moyen d'articles par commande.
+
+      
+      - name: first_order_date
+        description: Date de la première commande du client.
+
+      - name: last_order_date
+        description: Date de la dernière commande du client.
+
+      - name: customer_lifetime
+        description: Durée de vie client en jours (last_order_date - first_order_date).
+
+      
+      - name: revenue_per_order
+        description: Revenu net total divisé par le nombre de commandes.
+
+      - name: items_per_order
+        description: Nombre total d'articles divisé par le nombre de commandes.
+
+      - name: orders_per_month
+        description: Fréquence d'achat mensuelle estimée sur la durée de vie client.
+
+     
+      - name: is_one_time_buyer
+        description: TRUE si le client n'a passé qu'une seule commande.
+      
+       
+
+      - name: has_repeat_purchase
+        description: TRUE si le client a passé au moins 2 commandes.
+        
+
+      
+      - name: customer_type
+        description: Catégorie d'achat basée sur le nombre de commandes.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['One-Time Buyer', 'Repeat Buyer', 'Loyal Customer']
+
+      - name: clv_tier
+        description: >
+          Segment de valeur client calculé par quartiles de revenu total.
+          Valeurs : High Value (>P75), Medium-High Value (>P50), Medium-Low Value (>P25), Low Value.
+        tests:
+          - accepted_values:
+              arguments: 
+                values: ['High Value', 'Medium-High Value', 'Medium-Low Value', 'Low Value']
+
+      - name: customer_segment
+        description: >
+          Segment client combinant fidélité (nombre de commandes) et valeur (revenu).
+          
+
+      - name: customer_lifetime_stage
+        description: >
+          Stade de maturité du client basé sur sa durée de vie en jours.
+          
+        tests:
+          - accepted_values:
+              arguments: 
+                values:
+                  - 'New Customer (0-1 month)'
+                  - 'Recent Customer (1-3 months)'
+                  - 'Established (3-6 months)'
+                  - 'Long-term (6-12 months)'
+                  - 'Veteran (12+ months)'

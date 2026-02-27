@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: int_local_bike__fct_stock_snapshot
+    description: >
+      Snapshot du stock actuel par produit et par magasin. Modèle statique reflétant
+      l'état du stock au moment du dernier chargement.
+      Grain : 1 ligne par (product_id, store_id).
+      Sources : stg_local_bike__stocks + int_local_bike__dim_products
+              + int_local_bike__product_store_orders.
+    columns:
+      - name: stock_id
+        description: Identifiant unique du stock (clé primaire).
+        tests:
+          - not_null
+          - unique
+
+      - name: product_id
+        description: Identifiant du produit (clé étrangère vers dim_products).
+        tests:
+          - not_null
+
+      - name: store_id
+        description: Identifiant du magasin (clé étrangère vers dim_stores).
+        tests:
+          - not_null
+
+      - name: current_stock_qty
+        description: Quantité en stock disponible au moment du snapshot.
+        tests:
+          - not_null
+
+      - name: inventory_value
+        description: Valeur totale du stock pour ce produit dans ce magasin (current_stock_qty × product_price).
+
+      - name: is_out_of_stock
+        description: TRUE si la quantité en stock est égale à 0.
+        tests:
+          - not_null
+       
+
+      - name: has_never_sold
+        description: TRUE si aucune vente n'a jamais été enregistrée pour ce produit dans ce magasin.
+        tests:
+          - not_null
+      
