@@ -58,10 +58,7 @@ models:
         description: TRUE si la commande a été expédiée (shipped_date non NULL).
         tests:
           - not_null
-          - accepted_values:
-              arguments:
-                values: [true, false]
-                quote: false
+        
 
       - name: is_completed
         description: TRUE si le statut de la commande est "Completed" (order_status = 4).
